@@ -1,0 +1,8 @@
+apiVersion: configme.javaworm.com/v1
+kind: ConfigSource
+metadata:
+  name: simple-http-config
+spec:
+  sourceType: http
+  targetConfigMapName: http-config
+  sourceConfig: {}
