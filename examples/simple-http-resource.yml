@@ -5,4 +5,5 @@ metadata:
 spec:
   sourceType: http
   targetConfigMapName: http-config
-  sourceConfig: {}
+  sourceConfig: 
+    url: http://opentable.herokuapp.com/api/stats
