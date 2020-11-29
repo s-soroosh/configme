@@ -1,4 +1,3 @@
 package com.javaworm.configme;
 
-public interface SourceType {
-}
+public interface SourceType {}

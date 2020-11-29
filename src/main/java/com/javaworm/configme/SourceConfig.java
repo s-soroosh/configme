@@ -1,4 +1,3 @@
 package com.javaworm.configme;
 
-public class SourceConfig {
-}
+public class SourceConfig {}
