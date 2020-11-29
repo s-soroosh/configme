@@ -6,4 +6,4 @@ spec:
   sourceType: http
   targetConfigMapName: http-config
   sourceConfig: 
-    url: http://opentable.herokuapp.com/api/stats
+    url: http://opentable.herokuapp.com/api/cities
