@@ -7,7 +7,7 @@ import io.javaoperatorsdk.operator.api.Controller;
 import io.javaoperatorsdk.operator.api.ResourceController;
 import io.javaoperatorsdk.operator.api.UpdateControl;
 
-@Controller(crdName = "com.javaworm.configme.ConfigResource")
+@Controller(crdName = "configsources.configme.javaworm.com")
 public class ConfigResourceController implements ResourceController<ConfigSourceResource> {
     private final KubernetesClient k8sClient;
 
