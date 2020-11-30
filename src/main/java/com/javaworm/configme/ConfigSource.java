@@ -29,7 +29,7 @@ public class ConfigSource<T extends SourceConfig> {
         this.namespace = namespace;
     }
 
-    public SourceConfig getSourceConfig() {
+    public T getSourceConfig() {
         return sourceConfig;
     }
 
