@@ -10,5 +10,9 @@ public class ResourceScheduler {
     }
 
     public void schedule(ConfigSourceResource resource) {
+        final var configSource = this.configSourceFactory.create(resource);
+        if (configSource.getSourceType().equals("http")) {
+            new HttpResourceScheduler().schedule(configSource);
+        }
     }
 }
