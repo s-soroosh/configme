@@ -1,7 +1,6 @@
 package com.javaworm.configme.controllers;
 
-import com.javaworm.configme.ConfigSource;
-import com.javaworm.configme.ConfigSourceFactory;
+import com.javaworm.configme.ResourceScheduler;
 import com.javaworm.configme.resources.ConfigSourceResource;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
@@ -22,10 +21,10 @@ import java.net.http.HttpResponse;
 @Controller(crdName = "configsources.configme.javaworm.com")
 public class ConfigResourceController implements ResourceController<ConfigSourceResource> {
     private final KubernetesClient k8sClient;
-    private final ConfigSourceFactory configSourceFactory;
+    private final ResourceScheduler resourceScheduler;
 
-    public ConfigResourceController(ConfigSourceFactory configSourceFactory, KubernetesClient k8sClient) {
-        this.configSourceFactory = configSourceFactory;
+    public ConfigResourceController(ResourceScheduler resourceScheduler, KubernetesClient k8sClient) {
+        this.resourceScheduler = resourceScheduler;
         this.k8sClient = k8sClient;
     }
 
@@ -41,7 +40,7 @@ public class ConfigResourceController implements ResourceController<ConfigSource
             Context<ConfigSourceResource> context
     ) {
 
-        final ConfigSource configSource = configSourceFactory.create(configSourceResource);
+        resourceScheduler.schedule(configSourceResource);
         final var configName = configSourceResource.getSpec().getTargetConfigMapName();
         final var url = configSourceResource.getSpec().getSourceConfig().getOrDefault("url", "").toString();
         HttpClient client = HttpClient.newHttpClient();
