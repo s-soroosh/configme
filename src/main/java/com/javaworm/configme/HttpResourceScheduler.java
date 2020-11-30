@@ -19,7 +19,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class HttpResourceScheduler {
+public class HttpResourceScheduler implements ResourceScheduler {
     private static final Logger log = LoggerFactory.getLogger(HttpResourceScheduler.class);
     private HttpClient client = HttpClient.newHttpClient();
     private KubernetesClient k8sClient;
@@ -37,11 +37,12 @@ public class HttpResourceScheduler {
         final var configName = configSource.getTargetConfigMapName();
         final var url = configSource.getSourceConfig().getUrl();
         final var namespace = configSource.getNamespace();
-        final var intervalSeconds = configSource.getSourceConfig().getIntervalSeconds() * 1000;
+        final var intervalSeconds = configSource.getSourceConfig().getIntervalSeconds();
+        final var intervalMilliseconds = (int) (intervalSeconds * 1000.0);
         final TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                log.info("Updating the {}", configSource);
+                log.info("Updating the {}", configSource.getName());
                 try {
                     final var body = client.send(HttpRequest.newBuilder().uri(URI.create(url)).GET().build(), HttpResponse.BodyHandlers.ofString()).body();
 
@@ -62,8 +63,9 @@ public class HttpResourceScheduler {
             }
         };
 
-        timer.schedule(task, 0, intervalSeconds);
+        timer.schedule(task, 0, intervalMilliseconds);
         resourceTimers.put(configSource.getUid(), task);
+        log.info("Config source {} scheduled to refresh every {}s", configSource.getName(), intervalSeconds);
     }
 
     private void cancelCurrentTask(ConfigSource<HttpSourceConfig> configSource) {
@@ -74,7 +76,7 @@ public class HttpResourceScheduler {
             return;
         }
         log.info("Canceling task for Resource UID [{}]", uid);
-        final var cancelationResult = currentTimerTask.cancel();
-        log.info("Canceling task result [{}]", cancelationResult);
+        final var cancellationResult = currentTimerTask.cancel();
+        log.info("Canceling task result [{}]", cancellationResult);
     }
 }
