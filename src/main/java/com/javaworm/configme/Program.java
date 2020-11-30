@@ -11,7 +11,7 @@ public class Program {
         final var operator = new Operator(k8sClient);
         final var objectMapper = new ObjectMapper();
         final var configSourceFactory = new ConfigSourceFactory(objectMapper);
-        final var resourceScheduler = new ResourceScheduler(configSourceFactory, k8sClient);
+        final var resourceScheduler = new ResourceSchedulerManager(configSourceFactory, k8sClient);
         final var controller = new ConfigResourceController(resourceScheduler, k8sClient);
         operator.registerController(controller);
     }
