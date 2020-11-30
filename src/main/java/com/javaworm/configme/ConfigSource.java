@@ -31,4 +31,8 @@ public class ConfigSource<T extends SourceConfig> {
     public String getUid() {
         return resource.getMetadata().getUid();
     }
+
+    public String getName() {
+        return resource.getMetadata().getName();
+    }
 }
