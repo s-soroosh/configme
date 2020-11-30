@@ -4,7 +4,6 @@ import com.javaworm.configme.resources.ConfigSourceResource;
 
 public class ConfigSource<T extends SourceConfig> {
     private final ConfigSourceResource resource;
-    private String sourceType;
     private T sourceConfig;
 
     public ConfigSource(ConfigSourceResource resource, T sourceConfig) {
@@ -27,5 +26,9 @@ public class ConfigSource<T extends SourceConfig> {
 
     public String getTargetConfigMapName() {
         return resource.getSpec().getTargetConfigMapName();
+    }
+
+    public String getUid() {
+        return resource.getMetadata().getUid();
     }
 }
