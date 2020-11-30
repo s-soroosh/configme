@@ -14,10 +14,9 @@ public class ConfigSourceFactory {
 
     public ConfigSource create(ConfigSourceResource configSourceResource) {
         final String sourceType = configSourceResource.getSpec().getSourceType();
-        final String namespace = configSourceResource.getMetadata().getNamespace();
         if (sourceType.equals("http")) {
             final HttpSourceConfig httpSourceConfig = this.objectMapper.convertValue(configSourceResource.getSpec().getSourceConfig(), HttpSourceConfig.class);
-            return new ConfigSource(sourceType, namespace, httpSourceConfig, configSourceResource.getSpec().getTargetConfigMapName());
+            return new ConfigSource(configSourceResource, httpSourceConfig);
         }
         throw new RuntimeException(sourceType + " is not supported source type");
     }

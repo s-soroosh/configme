@@ -1,47 +1,31 @@
 package com.javaworm.configme;
 
-public class ConfigSource<T extends SourceConfig> {
-    private String sourceType;
-    private String namespace;
-    private T sourceConfig;
-    private String targetConfigMapName;
+import com.javaworm.configme.resources.ConfigSourceResource;
 
-    public ConfigSource(String sourceType, String namespace, T sourceConfig, String targetConfigMapName) {
-        this.sourceType = sourceType;
-        this.namespace = namespace;
+public class ConfigSource<T extends SourceConfig> {
+    private final ConfigSourceResource resource;
+    private String sourceType;
+    private T sourceConfig;
+
+    public ConfigSource(ConfigSourceResource resource, T sourceConfig) {
+        this.resource = resource;
         this.sourceConfig = sourceConfig;
-        this.targetConfigMapName = targetConfigMapName;
     }
 
     public String getSourceType() {
-        return sourceType;
-    }
-
-    public void setSourceType(String sourceType) {
-        this.sourceType = sourceType;
+        return resource.getSpec().getSourceType();
     }
 
     public String getNamespace() {
-        return namespace;
+        return resource.getMetadata().getNamespace();
     }
 
-    public void setNamespace(String namespace) {
-        this.namespace = namespace;
-    }
 
     public T getSourceConfig() {
         return sourceConfig;
     }
 
-    public void setSourceConfig(T sourceConfig) {
-        this.sourceConfig = sourceConfig;
-    }
-
     public String getTargetConfigMapName() {
-        return targetConfigMapName;
-    }
-
-    public void setTargetConfigMapName(String targetConfigMapName) {
-        this.targetConfigMapName = targetConfigMapName;
+        return resource.getSpec().getTargetConfigMapName();
     }
 }
