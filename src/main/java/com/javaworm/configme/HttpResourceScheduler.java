@@ -28,15 +28,15 @@ public class HttpResourceScheduler {
     }
 
     public void schedule(ConfigSource<HttpSourceConfig> configSource) {
-        timer.cancel();
+        //        TODO: cancel old scheduled task
+        final var configName = configSource.getTargetConfigMapName();
+        final var url = configSource.getSourceConfig().getUrl();
+        final var namespace = configSource.getNamespace();
+        final var intervalSeconds = configSource.getSourceConfig().getIntervalSeconds() * 1000;
         final TimerTask task = new TimerTask() {
             @Override
             public void run() {
                 log.info("Updating the {}", configSource);
-                final var configName = configSource.getTargetConfigMapName();
-                final var url = configSource.getSourceConfig().getUrl();
-                final var namespace = configSource.getNamespace();
-
                 try {
                     final var body = client.send(HttpRequest.newBuilder().uri(URI.create(url)).GET().build(), HttpResponse.BodyHandlers.ofString()).body();
 
@@ -56,6 +56,6 @@ public class HttpResourceScheduler {
                 }
             }
         };
-        timer.schedule(task, 0, 10_000);
+        timer.schedule(task, 0, intervalSeconds);
     }
 }
