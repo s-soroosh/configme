@@ -22,7 +22,7 @@ public class ConfigResourceController implements ResourceController<ConfigSource
             ConfigSourceResource configSourceResource,
             Context<ConfigSourceResource> context
     ) {
-        return false;
+        return true;
     }
 
     public UpdateControl<ConfigSourceResource> createOrUpdateResource(
