@@ -17,6 +17,7 @@ import java.net.http.HttpResponse;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class HttpResourceScheduler implements ResourceScheduler {
@@ -30,8 +31,10 @@ public class HttpResourceScheduler implements ResourceScheduler {
         this.k8sClient = k8sClient;
     }
 
-    public void schedule(ConfigSource<HttpSourceConfig> configSource) {
+    public CompletableFuture<Void> schedule(ConfigSource<HttpSourceConfig> configSource) {
         cancelCurrentTask(configSource);
+        final var result = new CompletableFuture<Void>();
+
 
         //        TODO: cancel old scheduled task
         final var configName = configSource.getTargetConfigMapName();
@@ -55,10 +58,14 @@ public class HttpResourceScheduler implements ResourceScheduler {
                             withNewMetadata().withName(configName).endMetadata().
                             addToData("config", body).
                             build());
+                    result.complete(null);
+
                 } catch (IOException e) {
                     e.printStackTrace();
+                    result.completeExceptionally(e);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
+                    result.completeExceptionally(e);
                 }
             }
         };
@@ -66,6 +73,7 @@ public class HttpResourceScheduler implements ResourceScheduler {
         timer.schedule(task, 0, intervalMilliseconds);
         resourceTimers.put(configSource.getUid(), task);
         log.info("Config source {} scheduled to refresh every {}s", configSource.getName(), intervalSeconds);
+        return result;
     }
 
     private void cancelCurrentTask(ConfigSource<HttpSourceConfig> configSource) {

@@ -7,6 +7,10 @@ import io.javaoperatorsdk.operator.api.Controller;
 import io.javaoperatorsdk.operator.api.ResourceController;
 import io.javaoperatorsdk.operator.api.UpdateControl;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 @Controller(crdName = "configsources.configme.javaworm.com")
 public class ConfigResourceController implements ResourceController<ConfigSourceResource> {
     private final ResourceSchedulerManager resourceSchedulerManager;
@@ -26,7 +30,20 @@ public class ConfigResourceController implements ResourceController<ConfigSource
             ConfigSourceResource configSourceResource,
             Context<ConfigSourceResource> context
     ) {
-        resourceSchedulerManager.schedule(configSourceResource);
-        return UpdateControl.noUpdate();
+        final var completableFuture = resourceSchedulerManager.schedule(configSourceResource);
+        try {
+            final var unused = completableFuture.get(20, TimeUnit.SECONDS);
+            System.out.println("Successful update!");
+            return UpdateControl.noUpdate();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (TimeoutException e) {
+            e.printStackTrace();
+        }
+        throw new RuntimeException("Timeout");
+
+
     }
 }
