@@ -5,6 +5,8 @@ metadata:
 spec:
   sourceType: http
   targetConfigMapName: http-config
+  blocking: true
+  blockingTimeoutSeconds: 30.0 
   sourceConfig: 
     url: https://opentable.herokuapp.com/api/cities
     intervalSeconds: 10
