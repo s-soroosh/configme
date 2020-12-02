@@ -30,19 +30,11 @@ public class ConfigResourceController implements ResourceController<ConfigSource
             ConfigSourceResource configSourceResource,
             Context<ConfigSourceResource> context
     ) {
-        final var completableFuture = resourceSchedulerManager.schedule(configSourceResource);
-        try {
-            final var unused = completableFuture.get(20, TimeUnit.SECONDS);
-            System.out.println("Successful update!");
-            return UpdateControl.noUpdate();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
-            e.printStackTrace();
-        }
-        throw new RuntimeException("Timeout");
+        resourceSchedulerManager.schedule(configSourceResource);
+
+
+        System.out.println("Successful update!");
+        return UpdateControl.noUpdate();
 
 
     }

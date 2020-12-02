@@ -7,13 +7,13 @@ public class ConfigSourceResourceSpec {
     private Map sourceConfig;
     private String targetConfigMapName;
     private boolean blocking;
-    private double blockingTimeoutSeconds;
+    private int blockingTimeoutSeconds;
 
     public boolean isBlocking() {
         return blocking;
     }
 
-    public double getBlockingTimeoutSeconds() {
+    public long getBlockingTimeoutSeconds() {
         return blockingTimeoutSeconds;
     }
 
