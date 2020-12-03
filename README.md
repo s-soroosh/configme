@@ -3,7 +3,7 @@ ConfigME
 A Kubernetes operator to load configmap data from external services. 
 
 
-##TODO
+## TODO
 
 * Let user define if configmap should be created/updated in blocking way on apply
 * Handle http errors may happen
