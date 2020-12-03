@@ -4,7 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaworm.configme.controllers.ConfigResourceController;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.javaoperatorsdk.operator.Operator;
+import io.quarkus.runtime.Quarkus;
+import io.quarkus.runtime.annotations.QuarkusMain;
 
+@QuarkusMain
 public class Program {
     public static void main(String[] args) {
         final var k8sClient = new DefaultKubernetesClient();
@@ -14,5 +17,6 @@ public class Program {
         final var resourceScheduler = new ResourceSchedulerManager(configSourceFactory, k8sClient);
         final var controller = new ConfigResourceController(resourceScheduler);
         operator.registerController(controller);
+        Quarkus.run();
     }
 }
