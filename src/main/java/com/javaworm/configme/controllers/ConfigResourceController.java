@@ -2,16 +2,15 @@ package com.javaworm.configme.controllers;
 
 import com.javaworm.configme.ResourceSchedulerManager;
 import com.javaworm.configme.resources.ConfigSourceResource;
+import com.javaworm.configme.resources.ConfigSourceResourceStatus;
 import io.javaoperatorsdk.operator.api.Context;
 import io.javaoperatorsdk.operator.api.Controller;
 import io.javaoperatorsdk.operator.api.ResourceController;
 import io.javaoperatorsdk.operator.api.UpdateControl;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @Controller(crdName = "configsources.configme.javaworm.com")
+@RegisterForReflection
 public class ConfigResourceController implements ResourceController<ConfigSourceResource> {
     private final ResourceSchedulerManager resourceSchedulerManager;
 
@@ -31,11 +30,8 @@ public class ConfigResourceController implements ResourceController<ConfigSource
             Context<ConfigSourceResource> context
     ) {
         resourceSchedulerManager.schedule(configSourceResource);
-
-
         System.out.println("Successful update!");
-        return UpdateControl.noUpdate();
-
-
+        configSourceResource.setStatus(new ConfigSourceResourceStatus("OK"));
+        return UpdateControl.updateStatusSubResource(configSourceResource);
     }
 }
