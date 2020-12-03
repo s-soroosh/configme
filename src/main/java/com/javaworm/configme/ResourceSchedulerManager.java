@@ -25,7 +25,7 @@ public class ResourceSchedulerManager {
         final var sourceType = configSource.getSourceType();
         final var scheduler = sourceTypeSchedulers.get(sourceType);
         if (scheduler == null) {
-            throw new RuntimeException("No scheduler found for source type [%s]".formatted(sourceType));
+            throw new RuntimeException(String.format("No scheduler found for source type [%s]", sourceType));
         }
         final var schedule = scheduler.schedule(configSource);
 
