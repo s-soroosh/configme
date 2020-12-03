@@ -24,6 +24,7 @@ public class Program {
             final var resourceScheduler = new ResourceSchedulerManager(configSourceFactory, k8sClient);
             final var controller = new ConfigResourceController(resourceScheduler);
             operator.registerController(controller);
+            Quarkus.waitForExit();
             return 0;
         }
     }
