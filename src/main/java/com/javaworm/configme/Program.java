@@ -5,18 +5,26 @@ import com.javaworm.configme.controllers.ConfigResourceController;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.javaoperatorsdk.operator.Operator;
 import io.quarkus.runtime.Quarkus;
+import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
 
 @QuarkusMain
 public class Program {
     public static void main(String[] args) {
-        final var k8sClient = new DefaultKubernetesClient();
-        final var operator = new Operator(k8sClient);
-        final var objectMapper = new ObjectMapper();
-        final var configSourceFactory = new ConfigSourceFactory(objectMapper);
-        final var resourceScheduler = new ResourceSchedulerManager(configSourceFactory, k8sClient);
-        final var controller = new ConfigResourceController(resourceScheduler);
-        operator.registerController(controller);
-        Quarkus.run();
+        Quarkus.run(Runner.class, args);
+    }
+
+    static class Runner implements QuarkusApplication {
+        @Override
+        public int run(String... args) throws Exception {
+            final var k8sClient = new DefaultKubernetesClient();
+            final var operator = new Operator(k8sClient);
+            final var objectMapper = new ObjectMapper();
+            final var configSourceFactory = new ConfigSourceFactory(objectMapper);
+            final var resourceScheduler = new ResourceSchedulerManager(configSourceFactory, k8sClient);
+            final var controller = new ConfigResourceController(resourceScheduler);
+            operator.registerController(controller);
+            return 0;
+        }
     }
 }
