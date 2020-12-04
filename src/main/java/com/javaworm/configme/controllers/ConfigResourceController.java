@@ -3,10 +3,7 @@ package com.javaworm.configme.controllers;
 import com.javaworm.configme.ResourceSchedulerManager;
 import com.javaworm.configme.resources.ConfigSourceResource;
 import com.javaworm.configme.resources.ConfigSourceResourceStatus;
-import io.javaoperatorsdk.operator.api.Context;
-import io.javaoperatorsdk.operator.api.Controller;
-import io.javaoperatorsdk.operator.api.ResourceController;
-import io.javaoperatorsdk.operator.api.UpdateControl;
+import io.javaoperatorsdk.operator.api.*;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @Controller(crdName = "configsources.configme.javaworm.com")
@@ -18,11 +15,11 @@ public class ConfigResourceController implements ResourceController<ConfigSource
         this.resourceSchedulerManager = resourceSchedulerManager;
     }
 
-    public boolean deleteResource(
+    public DeleteControl deleteResource(
             ConfigSourceResource configSourceResource,
             Context<ConfigSourceResource> context
     ) {
-        return true;
+        return DeleteControl.DEFAULT_DELETE;
     }
 
     public UpdateControl<ConfigSourceResource> createOrUpdateResource(
