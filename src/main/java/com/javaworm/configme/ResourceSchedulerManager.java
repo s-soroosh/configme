@@ -4,9 +4,6 @@ import com.javaworm.configme.resources.ConfigSourceResource;
 import io.fabric8.kubernetes.client.KubernetesClient;
 
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class ResourceSchedulerManager {
     private final ConfigSourceFactory configSourceFactory;
@@ -27,19 +24,6 @@ public class ResourceSchedulerManager {
         if (scheduler == null) {
             throw new RuntimeException(String.format("No scheduler found for source type [%s]", sourceType));
         }
-        final var schedule = scheduler.schedule(configSource);
-
-        if (resource.getSpec().isBlocking()) {
-            try {
-                schedule.get(resource.getSpec().getBlockingTimeoutSeconds(),
-                        TimeUnit.SECONDS);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (TimeoutException e) {
-                e.printStackTrace();
-            }
-        }
+        scheduler.schedule(configSource);
     }
 }

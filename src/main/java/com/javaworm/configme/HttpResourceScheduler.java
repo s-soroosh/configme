@@ -22,7 +22,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class HttpResourceScheduler implements ResourceScheduler {
     private static final Logger log = LoggerFactory.getLogger(HttpResourceScheduler.class);
-    private HttpClient client = HttpClient.newHttpClient();
+    private HttpClient client = HttpClient
+            .newBuilder()
+            .followRedirects(HttpClient.Redirect.NORMAL)
+            .build();
+
     private KubernetesClient k8sClient;
     private Timer timer = new Timer(HttpResourceScheduler.class.getName());
     private Map<String, TimerTask> resourceTimers = new ConcurrentHashMap<>();
@@ -34,8 +38,6 @@ public class HttpResourceScheduler implements ResourceScheduler {
     public CompletableFuture<Void> schedule(ConfigSource<HttpSourceConfig> configSource) {
         cancelCurrentTask(configSource);
         final var result = new CompletableFuture<Void>();
-
-
         //        TODO: cancel old scheduled task
         final var configName = configSource.getTargetConfigMapName();
         final var url = configSource.getSourceConfig().getUrl();
@@ -45,9 +47,19 @@ public class HttpResourceScheduler implements ResourceScheduler {
         final TimerTask task = new TimerTask() {
             @Override
             public void run() {
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 log.info("Updating the {}", configSource.getName());
                 try {
-                    final var body = client.send(HttpRequest.newBuilder().uri(URI.create(url)).GET().build(), HttpResponse.BodyHandlers.ofString()).body();
+                    final var response = client.send(HttpRequest.newBuilder().uri(URI.create(url)).GET().build(), HttpResponse.BodyHandlers.ofString());
+                    if (response.statusCode() < 200 || response.statusCode() > 299) {
+                        return;
+//                        TODO: Http error
+                    }
+                    final var body = response.body();
 
                     final Resource<ConfigMap, DoneableConfigMap> configMapResource = k8sClient.configMaps()
                             .inNamespace(namespace)
