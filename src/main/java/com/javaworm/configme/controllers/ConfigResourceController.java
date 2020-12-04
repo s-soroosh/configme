@@ -12,7 +12,7 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 @RegisterForReflection
 public class ConfigResourceController implements ResourceController<ConfigSourceResource> {
     private final ResourceSchedulerManager resourceSchedulerManager;
-    private AdhocEventSource eventSource;
+    private AdhocEventSource eventSource = new AdhocEventSource();
 
     public ConfigResourceController(ResourceSchedulerManager resourceSchedulerManager) {
         this.resourceSchedulerManager = resourceSchedulerManager;
@@ -20,8 +20,7 @@ public class ConfigResourceController implements ResourceController<ConfigSource
 
     @Override
     public void init(EventSourceManager eventSourceManager) {
-        eventSourceManager.registerEventSource("internal-events", new AdhocEventSource());
-        eventSource = (AdhocEventSource) eventSourceManager.getRegisteredEventSources().get("internal-events");
+        eventSourceManager.registerEventSource("internal-events", eventSource);
     }
 
     public DeleteControl deleteResource(
