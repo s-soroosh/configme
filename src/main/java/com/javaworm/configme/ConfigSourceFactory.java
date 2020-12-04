@@ -12,12 +12,13 @@ public class ConfigSourceFactory {
         this.objectMapper = objectMapper;
     }
 
-    public ConfigSource create(ConfigSourceResource configSourceResource) {
+    public ConfigSource create(ConfigSourceResource configSourceResource,AdhocEventSource eventSource) {
         final String sourceType = configSourceResource.getSpec().getSourceType();
         if (sourceType.equals("http")) {
             final HttpSourceConfig httpSourceConfig = this.objectMapper.convertValue(configSourceResource.getSpec().getSourceConfig(), HttpSourceConfig.class);
             return new ConfigSource(configSourceResource, httpSourceConfig);
         }
+        eventSource.update(configSourceResource, "sorry :(");
         throw new RuntimeException(sourceType + " is not supported source type");
     }
 }
