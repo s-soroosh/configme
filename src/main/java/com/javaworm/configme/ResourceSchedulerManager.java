@@ -10,10 +10,10 @@ public class ResourceSchedulerManager {
 
     private final Map<String, ResourceScheduler> sourceTypeSchedulers;
 
-    public ResourceSchedulerManager(ConfigSourceFactory configSourceFactory, KubernetesClient k8sClient) {
+    public ResourceSchedulerManager(ConfigSourceFactory configSourceFactory, KubernetesClient k8sClient, FetchedDataHandler fetchedDataHandler) {
         this.configSourceFactory = configSourceFactory;
         sourceTypeSchedulers = Map.of(
-                "http", new HttpResourceScheduler(k8sClient)
+                "http", new HttpResourceScheduler(fetchedDataHandler)
         );
     }
 

@@ -1,11 +1,6 @@
 package com.javaworm.configme;
 
 import com.javaworm.configme.sources.HttpSourceConfig;
-import io.fabric8.kubernetes.api.model.ConfigMap;
-import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
-import io.fabric8.kubernetes.api.model.DoneableConfigMap;
-import io.fabric8.kubernetes.client.KubernetesClient;
-import io.fabric8.kubernetes.client.dsl.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,67 +12,46 @@ import java.net.http.HttpResponse;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class HttpResourceScheduler implements ResourceScheduler {
     private static final Logger log = LoggerFactory.getLogger(HttpResourceScheduler.class);
-    private HttpClient client = HttpClient
+    private final HttpClient client = HttpClient
             .newBuilder()
             .followRedirects(HttpClient.Redirect.NORMAL)
             .build();
 
-    private KubernetesClient k8sClient;
-    private Timer timer = new Timer(HttpResourceScheduler.class.getName());
-    private Map<String, TimerTask> resourceTimers = new ConcurrentHashMap<>();
+    private final FetchedDataHandler fetchedDataHandler;
+    private final Timer timer = new Timer(HttpResourceScheduler.class.getName());
+    private final Map<String, TimerTask> resourceTimers = new ConcurrentHashMap<>();
 
-    public HttpResourceScheduler(KubernetesClient k8sClient) {
-        this.k8sClient = k8sClient;
+    public HttpResourceScheduler(FetchedDataHandler fetchedDataHandler) {
+        this.fetchedDataHandler = fetchedDataHandler;
     }
 
-    public CompletableFuture<Void> schedule(ConfigSource<HttpSourceConfig> configSource) {
+    public void schedule(ConfigSource<HttpSourceConfig> configSource) {
         cancelCurrentTask(configSource);
-        final var result = new CompletableFuture<Void>();
-        //        TODO: cancel old scheduled task
-        final var configName = configSource.getTargetConfigMapName();
         final var url = configSource.getSourceConfig().getUrl();
-        final var namespace = configSource.getNamespace();
         final var intervalSeconds = configSource.getSourceConfig().getIntervalSeconds();
         final var intervalMilliseconds = (int) (intervalSeconds * 1000.0);
         final TimerTask task = new TimerTask() {
             @Override
             public void run() {
+                log.debug("Fetching data from {}", url);
+                final var request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
                 try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                log.info("Updating the {}", configSource.getName());
-                try {
-                    final var response = client.send(HttpRequest.newBuilder().uri(URI.create(url)).GET().build(), HttpResponse.BodyHandlers.ofString());
+                    final HttpResponse<String> response;
+                    response = client.send(request, HttpResponse.BodyHandlers.ofString());
                     if (response.statusCode() < 200 || response.statusCode() > 299) {
                         return;
 //                        TODO: Http error
                     }
                     final var body = response.body();
 
-                    final Resource<ConfigMap, DoneableConfigMap> configMapResource = k8sClient.configMaps()
-                            .inNamespace(namespace)
-                            .withName(configName);
-
-
-                    ConfigMap configMap = configMapResource.createOrReplace(new ConfigMapBuilder().
-                            withNewMetadata().withName(configName).endMetadata().
-                            addToData("config", body).
-                            build());
-                    result.complete(null);
-
-                } catch (IOException e) {
+                    fetchedDataHandler.handle(configSource, body);
+                } catch (IOException | InterruptedException e) {
+                    log.error("Error in fetching data from " + url, e);
                     e.printStackTrace();
-                    result.completeExceptionally(e);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    result.completeExceptionally(e);
                 }
             }
         };
@@ -85,7 +59,6 @@ public class HttpResourceScheduler implements ResourceScheduler {
         timer.schedule(task, 0, intervalMilliseconds);
         resourceTimers.put(configSource.getUid(), task);
         log.info("Config source {} scheduled to refresh every {}s", configSource.getName(), intervalSeconds);
-        return result;
     }
 
     private void cancelCurrentTask(ConfigSource<HttpSourceConfig> configSource) {

@@ -2,7 +2,6 @@ package com.javaworm.configme;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.javaworm.configme.controllers.ConfigResourceController;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.javaoperatorsdk.operator.Operator;
@@ -18,15 +17,15 @@ public class Program {
 
     static class Runner implements QuarkusApplication {
         @Override
-        public int run(String... args) throws Exception {
+        public int run(String... args)  {
             final var k8sClient = new DefaultKubernetesClient();
             final var operator = new Operator(k8sClient);
             final var objectMapper = new ObjectMapper()
                     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-
+            final var fetchedDataHandler = new FetchedDataHandler(k8sClient);
             final var configSourceFactory = new ConfigSourceFactory(objectMapper);
-            final var resourceScheduler = new ResourceSchedulerManager(configSourceFactory, k8sClient);
+            final var resourceScheduler = new ResourceSchedulerManager(configSourceFactory, k8sClient, fetchedDataHandler);
             final var controller = new ConfigResourceController(resourceScheduler);
             operator.registerController(controller);
             Quarkus.waitForExit();

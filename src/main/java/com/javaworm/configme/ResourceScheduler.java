@@ -5,5 +5,5 @@ import com.javaworm.configme.sources.HttpSourceConfig;
 import java.util.concurrent.CompletableFuture;
 
 public interface ResourceScheduler {
-    CompletableFuture<Void> schedule(ConfigSource<HttpSourceConfig> configSource);
+    void schedule(ConfigSource<HttpSourceConfig> configSource);
 }
