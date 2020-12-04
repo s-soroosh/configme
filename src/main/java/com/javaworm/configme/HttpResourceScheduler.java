@@ -43,15 +43,14 @@ public class HttpResourceScheduler implements ResourceScheduler {
                     final HttpResponse<String> response;
                     response = client.send(request, HttpResponse.BodyHandlers.ofString());
                     if (response.statusCode() < 200 || response.statusCode() > 299) {
+                        log.warn("Fetching data from url {} failed with status code {} and body {}", url, response.statusCode(), response.body());
                         return;
-//                        TODO: Http error
                     }
                     final var body = response.body();
 
                     fetchedDataHandler.handle(configSource, body);
                 } catch (IOException | InterruptedException e) {
                     log.error("Error in fetching data from " + url, e);
-                    e.printStackTrace();
                 }
             }
         };
