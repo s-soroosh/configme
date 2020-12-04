@@ -3,11 +3,13 @@ package com.javaworm.configme;
 import com.javaworm.configme.resources.ConfigSourceResource;
 
 public class ConfigSource<T extends SourceConfig> {
+    private final RequestContext<ConfigSourceResource> context;
     private final ConfigSourceResource resource;
     private T sourceConfig;
 
-    public ConfigSource(ConfigSourceResource resource, T sourceConfig) {
-        this.resource = resource;
+    public ConfigSource(RequestContext<ConfigSourceResource> context, T sourceConfig) {
+        this.context = context;
+        this.resource = context.getResource();
         this.sourceConfig = sourceConfig;
     }
 
