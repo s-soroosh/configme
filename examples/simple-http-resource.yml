@@ -2,6 +2,8 @@ apiVersion: configme.javaworm.com/v1
 kind: ConfigSource
 metadata:
   name: simple-http-config
+  finalizers:
+  - configsources.configme.javaworm.com/finalizer
 spec:
   sourceType: http
   targetConfigMapName: http-config
