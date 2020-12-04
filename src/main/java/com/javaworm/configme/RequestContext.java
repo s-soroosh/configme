@@ -11,11 +11,15 @@ public class RequestContext<T extends CustomResource> {
         this.eventSource = eventSource;
     }
 
+    public void emit(String message) {
+        this.eventSource.update(resource, message);
+    }
+
     public T getResource() {
         return resource;
     }
 
-    public AdhocEventSource getEventSource() {
-        return eventSource;
-    }
+//    public AdhocEventSource getEventSource() {
+//        return eventSource;
+//    }
 }

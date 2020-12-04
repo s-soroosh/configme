@@ -18,7 +18,7 @@ public class ConfigSourceFactory {
             final HttpSourceConfig httpSourceConfig = this.objectMapper.convertValue(context.getResource().getSpec().getSourceConfig(), HttpSourceConfig.class);
             return new ConfigSource(context.getResource(), httpSourceConfig);
         }
-        context.getEventSource().update(context.getResource(), "sorry :(");
+        context.emit("sorry :(");
         throw new RuntimeException(sourceType + " is not supported source type");
     }
 }
