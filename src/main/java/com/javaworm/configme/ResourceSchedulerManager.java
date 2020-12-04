@@ -17,12 +17,12 @@ public class ResourceSchedulerManager {
         );
     }
 
-    public void schedule(ConfigSourceResource resource, AdhocEventSource eventSource) {
-        final var configSource = this.configSourceFactory.create(resource, eventSource);
+    public void schedule(RequestContext<ConfigSourceResource> context) {
+        final var configSource = this.configSourceFactory.create(context);
         final var sourceType = configSource.getSourceType();
         final var scheduler = sourceTypeSchedulers.get(sourceType);
         if (scheduler == null) {
-            eventSource.update(resource, "sorry :(");
+            context.getEventSource().update(context.getResource(), "sorry :(");
             throw new RuntimeException(String.format("No scheduler found for source type [%s]", sourceType));
         }
         scheduler.schedule(configSource);
