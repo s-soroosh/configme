@@ -26,6 +26,7 @@ public class ConfigResourceController implements ResourceController<ConfigSource
             ConfigSourceResource configSourceResource,
             Context<ConfigSourceResource> context
     ) {
+        System.out.println("Updating...");
         resourceSchedulerManager.schedule(configSourceResource);
         System.out.println("Successful update!");
         configSourceResource.setStatus(new ConfigSourceResourceStatus("OK"));
