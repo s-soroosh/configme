@@ -8,8 +8,6 @@ import io.javaoperatorsdk.operator.api.*;
 import io.javaoperatorsdk.operator.processing.event.EventSourceManager;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
-import java.util.Optional;
-
 @Controller(crdName = "configsources.configme.javaworm.com")
 @RegisterForReflection
 public class ConfigResourceController implements ResourceController<ConfigSourceResource> {
