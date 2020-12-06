@@ -5,14 +5,19 @@ import com.javaworm.configme.RequestContext;
 import com.javaworm.configme.ResourceSchedulerManager;
 import com.javaworm.configme.resources.ConfigSourceResource;
 import com.javaworm.configme.resources.ConfigSourceResourceStatus;
-import io.javaoperatorsdk.operator.api.*;
+import io.javaoperatorsdk.operator.api.Context;
+import io.javaoperatorsdk.operator.api.Controller;
+import io.javaoperatorsdk.operator.api.DeleteControl;
+import io.javaoperatorsdk.operator.api.UpdateControl;
 import io.javaoperatorsdk.operator.processing.event.EventSourceManager;
-import io.javaoperatorsdk.operator.processing.event.internal.CustomResourceEvent;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Controller(crdName = "configsources.configme.javaworm.com")
 @RegisterForReflection
-public class ConfigResourceController implements ResourceController<ConfigSourceResource> {
+public class ConfigResourceController extends BaseResourceController<ConfigSourceResource> {
+    private static final Logger LOG = LoggerFactory.getLogger(ConfigResourceController.class);
     private final ResourceSchedulerManager resourceSchedulerManager;
     private AdhocEventSource eventSource = new AdhocEventSource();
 
@@ -32,19 +37,22 @@ public class ConfigResourceController implements ResourceController<ConfigSource
         return DeleteControl.DEFAULT_DELETE;
     }
 
-    public UpdateControl<ConfigSourceResource> createOrUpdateResource(
-            ConfigSourceResource configSourceResource,
-            Context<ConfigSourceResource> context
-    ) {
-        final var adhocEvent = context.getEvents().getLatestOfType(AdhocEventSource.AdhocEvent.class);
-        final var customResourceEvent = context.getEvents().getLatestOfType(CustomResourceEvent.class);
-        if (adhocEvent.isPresent()) {
-            configSourceResource.setStatus(new ConfigSourceResourceStatus(adhocEvent.get().getMsg()));
-        }
-        if (customResourceEvent.isPresent()) {
-            RequestContext<ConfigSourceResource> requestContext = new RequestContext<>(configSourceResource, eventSource);
-            resourceSchedulerManager.schedule(requestContext);
-        }
-        return UpdateControl.updateStatusSubResource(configSourceResource);
+    @Override
+    public UpdateControl<ConfigSourceResource> onResourceUpdate(ConfigSourceResource resource, Context<ConfigSourceResource> context) {
+        RequestContext<ConfigSourceResource> requestContext = new RequestContext<>(resource, eventSource);
+        resourceSchedulerManager.schedule(requestContext);
+        return UpdateControl.updateStatusSubResource(resource);
+    }
+
+    @Override
+    public UpdateControl<ConfigSourceResource> onEvent(ConfigSourceResource resource, Context<ConfigSourceResource> context) {
+        context.getEvents().getLatestOfType(AdhocEventSource.AdhocEvent.class)
+                .ifPresent(e -> {
+                            LOG.info("Updating the status of the resource, new resource: [{}]", e.getMsg());
+                            resource.setStatus(new ConfigSourceResourceStatus(e.getMsg()));
+                        }
+                );
+
+        return UpdateControl.updateStatusSubResource(resource);
     }
 }
