@@ -31,9 +31,11 @@ public class ConfigResourceController extends BaseResourceController<ConfigSourc
     }
 
     public DeleteControl deleteResource(
-            ConfigSourceResource configSourceResource,
+            ConfigSourceResource resource,
             Context<ConfigSourceResource> context
     ) {
+        RequestContext<ConfigSourceResource> requestContext = new RequestContext<>(resource, eventSource);
+        resourceSchedulerManager.cleanup(requestContext);
         return DeleteControl.DEFAULT_DELETE;
     }
 

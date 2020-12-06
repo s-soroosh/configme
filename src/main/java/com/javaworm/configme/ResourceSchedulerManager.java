@@ -29,6 +29,10 @@ public class ResourceSchedulerManager {
         scheduler.schedule(configSource);
     }
 
+    public void cleanup(RequestContext<ConfigSourceResource> context) {
+        cancelExistingScheduleFor(context);
+    }
+
     private void cancelExistingScheduleFor(RequestContext<ConfigSourceResource> context) {
         sourceTypeSchedulers.values().forEach(scheduler -> scheduler.cancel(context));
     }
