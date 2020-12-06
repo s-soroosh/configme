@@ -18,6 +18,7 @@ public class ResourceSchedulerManager {
     }
 
     public void schedule(RequestContext<ConfigSourceResource> context) {
+        cancelExistingScheduleFor(context);
         final var configSource = this.configSourceFactory.create(context);
         final var sourceType = configSource.getSourceType();
         final var scheduler = sourceTypeSchedulers.get(sourceType);
@@ -26,5 +27,9 @@ public class ResourceSchedulerManager {
             throw new RuntimeException(String.format("No scheduler found for source type [%s]", sourceType));
         }
         scheduler.schedule(configSource);
+    }
+
+    private void cancelExistingScheduleFor(RequestContext<ConfigSourceResource> context) {
+        sourceTypeSchedulers.values().forEach(scheduler -> scheduler.cancel(context));
     }
 }

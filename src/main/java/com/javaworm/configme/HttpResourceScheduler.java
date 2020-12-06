@@ -1,5 +1,6 @@
 package com.javaworm.configme;
 
+import com.javaworm.configme.resources.ConfigSourceResource;
 import com.javaworm.configme.sources.HttpSourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +63,7 @@ public class HttpResourceScheduler implements ResourceScheduler {
 
     private void cancelCurrentTask(ConfigSource<HttpSourceConfig> configSource) {
         final var uid = configSource.getUid();
-        final var currentTimerTask = resourceTimers.remove(uid);
+        final var currentTimerTask = resourceTimers.get(uid);
         if (currentTimerTask == null) {
             log.info("Resource with UID [{}] has no task yet!", uid);
             return;
@@ -70,5 +71,22 @@ public class HttpResourceScheduler implements ResourceScheduler {
         log.info("Canceling task for Resource UID [{}]", uid);
         final var cancellationResult = currentTimerTask.cancel();
         log.info("Canceling task result [{}]", cancellationResult);
+        if (cancellationResult) {
+            resourceTimers.remove(uid);
+        }
+    }
+
+    @Override
+    public void cancel(RequestContext<ConfigSourceResource> context) {
+        final var uid = context.getResource().getMetadata().getUid();
+        final var timerTask = resourceTimers.get(uid);
+        if (timerTask != null) {
+            log.info("Canceling task for Resource UID [{}]", uid);
+            final var cancellationResult = timerTask.cancel();
+            log.info("Canceling task result for UID [{}] is [{}]", uid, cancellationResult);
+            if (cancellationResult) {
+                resourceTimers.remove(uid);
+            }
+        }
     }
 }
