@@ -3,6 +3,7 @@ package com.javaworm.configme;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
 import io.fabric8.kubernetes.api.model.DoneableConfigMap;
+import io.fabric8.kubernetes.api.model.OwnerReference;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.Resource;
 
@@ -27,11 +28,18 @@ public class FetchedDataHandler {
             ConfigMap configMap = configMapResource.createOrReplace(new ConfigMapBuilder().
                     withNewMetadata()
                     .withName(configName)
+                    .withOwnerReferences(new OwnerReference(
+                            configSource.getResource().getApiVersion(),
+                            true,
+                            true,
+                            configSource.getResource().getKind(),
+                            configSource.getName(),
+                            configSource.getUid())
+                    )
                     .endMetadata()
                     .addToData("config", data)
                     .addToData("lastUpdate", new Date().toString())
                     .addToData("hash", String.valueOf(data.hashCode()))
-
                     .build());
         } else {
             final String existingHash = existingConfigmap.getData().get("hash");
@@ -40,6 +48,14 @@ public class FetchedDataHandler {
                 configMapResource.replace(new ConfigMapBuilder().
                         withNewMetadata()
                         .withName(configName)
+                        .withOwnerReferences(new OwnerReference(
+                                configSource.getResource().getApiVersion(),
+                                true,
+                                true,
+                                configSource.getResource().getKind(),
+                                configSource.getName(),
+                                configSource.getUid())
+                        )
                         .endMetadata()
                         .addToData("config", data)
                         .addToData("lastUpdate", new Date().toString())
