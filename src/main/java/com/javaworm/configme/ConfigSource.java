@@ -13,8 +13,16 @@ public class ConfigSource<T extends SourceConfig> {
         this.sourceConfig = sourceConfig;
     }
 
+    public RequestContext<ConfigSourceResource> getContext() {
+        return context;
+    }
+
     public String getSourceType() {
         return resource.getSpec().getSourceType();
+    }
+
+    public ConfigSourceResource getResource() {
+        return resource;
     }
 
     public String getNamespace() {
