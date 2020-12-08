@@ -6,17 +6,17 @@ import io.fabric8.kubernetes.client.dsl.Resource;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.UUID;
 
 public class FetchedDataHandler {
     private final KubernetesClient k8sClient;
+    private final K8sEventEmitter k8sEventEmitter;
 
 
     public FetchedDataHandler(KubernetesClient k8sClient) {
         this.k8sClient = k8sClient;
+        this.k8sEventEmitter = new K8sEventEmitter(k8sClient);
     }
 
     public void handle(ConfigSource<? extends SourceConfig> configSource, String data) {
@@ -24,19 +24,7 @@ public class FetchedDataHandler {
         final var configName = configSource.getTargetConfigMapName();
         final String eventTime = LocalDateTime.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"));
         final var event = new EventBuilder()
-                .withInvolvedObject(new ObjectReference(
-                        configSource.getResource().getApiVersion(),
-                        null,
-                        configSource.getResource().getKind(),
-                        configSource.getName(),
-                        configSource.getNamespace(),
-                        null,
-                        configSource.getUid()))
-                .withNewMetadata().withName("X3-EVENT").endMetadata()
-                .withCount(10)
-                .withFirstTimestamp(eventTime)
-                .withLastTimestamp(eventTime)
-//                .withEventTime(:)
+                .withNewMetadata().withName("HANDLER-EVENT-" + configSource.getName()).endMetadata()
                 .withAction("X1")
                 .withType("T1")
                 .withReason("R1")
@@ -44,7 +32,7 @@ public class FetchedDataHandler {
 
 
 //        event.setInvolvedObject();
-        k8sClient.v1().events().inNamespace(configSource.getNamespace()).createOrReplace(event);
+        this.k8sEventEmitter.emit(configSource.getResource(), event);
         final Resource<ConfigMap, DoneableConfigMap> configMapResource = k8sClient.configMaps()
                 .inNamespace(namespace)
                 .withName(configName);
