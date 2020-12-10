@@ -8,5 +8,5 @@ spec:
   sourceType: http
   targetConfigMapName: http-config
   sourceConfig: 
-    url: https://opentable.herokuapp.com/api/cities
+    url: https://jsonplaceholder.typicode.com/todos
     intervalSeconds: 10
