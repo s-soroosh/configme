@@ -1,7 +1,6 @@
 package com.javaworm.configme.resources;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
-
 import java.util.Map;
 
 @RegisterForReflection
