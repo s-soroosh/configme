@@ -37,11 +37,23 @@ public class HttpSourceConfig implements SourceConfig {
   }
 
   public static HttpSourceConfig fromMap(Map<Object, Object> map) {
+    final var authenticationConfigMap =
+        (Map<Object, Object>) map.getOrDefault("authenticationConfig", null);
+    final BearerAuthenticationConfig authenticationConfig;
+    if (authenticationConfigMap == null) {
+      authenticationConfig = null;
+    } else {
+      authenticationConfig =
+          new BearerAuthenticationConfig(
+              authenticationConfigMap.get("tokenType").toString(),
+              authenticationConfigMap.get("secretName").toString(),
+              authenticationConfigMap.get("tokenSecretKey").toString());
+    }
+
     return new HttpSourceConfig(
         map.get("url").toString(), // validate it
         Double.parseDouble(map.getOrDefault("intervalSeconds", "60").toString()),
         map.getOrDefault("authenticationMethod", "none").toString(), // validate is in list
-        //        map.get("authenticationConfig")
-        null);
+        authenticationConfig);
   }
 }
