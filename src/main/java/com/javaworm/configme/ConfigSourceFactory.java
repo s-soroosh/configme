@@ -1,13 +1,11 @@
 package com.javaworm.configme;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaworm.configme.resources.ConfigSourceResource;
 import com.javaworm.configme.sources.HttpSourceConfig;
 
 public class ConfigSourceFactory {
 
-  public ConfigSourceFactory(ObjectMapper objectMapper) {
-  }
+  public ConfigSourceFactory() {}
 
   public ConfigSource create(RequestContext<ConfigSourceResource> context) {
     final String sourceType = context.getResource().getSpec().getSourceType();
