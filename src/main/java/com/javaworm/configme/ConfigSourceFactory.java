@@ -6,22 +6,18 @@ import com.javaworm.configme.sources.HttpSourceConfig;
 
 public class ConfigSourceFactory {
 
-    private final ObjectMapper objectMapper;
+  public ConfigSourceFactory(ObjectMapper objectMapper) {
+  }
 
-    public ConfigSourceFactory(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
+  public ConfigSource create(RequestContext<ConfigSourceResource> context) {
+    final String sourceType = context.getResource().getSpec().getSourceType();
+    if (sourceType.equals("http")) {
+      final HttpSourceConfig httpSourceConfig =
+          HttpSourceConfig.fromMap(context.getResource().getSpec().getSourceConfig());
 
-    public ConfigSource create(RequestContext<ConfigSourceResource> context) {
-        final String sourceType = context.getResource().getSpec().getSourceType();
-        if (sourceType.equals("http")) {
-            final HttpSourceConfig httpSourceConfig = this.objectMapper.convertValue(
-                    context.getResource().getSpec().getSourceConfig(),
-                    HttpSourceConfig.class
-            );
-            return new ConfigSource(context, httpSourceConfig);
-        }
-        context.emit("sorry :(");
-        throw new RuntimeException(sourceType + " is not supported source type");
+      return new ConfigSource(context, httpSourceConfig);
     }
+    context.emit("sorry :(");
+    throw new RuntimeException(sourceType + " is not supported source type");
+  }
 }
