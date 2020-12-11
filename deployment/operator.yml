@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: configme-operator
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: configme-operator
+  namespace: configme-operator
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: configme-operator
+  namespace: configme-operator
+spec:
+  selector:
+    matchLabels:
+      app: configme-operator
+  template:
+    metadata:
+      labels:
+        app: configme-operator
+    spec:
+      serviceAccountName: configme-operator
+      containers:
+        - name: operator
+          image: javawormops/configme:0.1
+          imagePullPolicy: IfNotPresent
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: configme-operator-admin
+subjects:
+  - kind: ServiceAccount
+    name: configme-operator
+    namespace: configme-operator
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: ""
