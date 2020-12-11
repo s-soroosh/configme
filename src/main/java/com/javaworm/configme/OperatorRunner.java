@@ -10,7 +10,7 @@ import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
 
 @QuarkusMain
-public class Program {
+public class OperatorRunner {
     public static void main(String[] args) {
         Quarkus.run(Runner.class, args);
     }
@@ -27,7 +27,7 @@ public class Program {
             final var configSourceFactory = new ConfigSourceFactory(objectMapper);
             final var resourceScheduler = new ResourceSchedulerManager(configSourceFactory, k8sClient, fetchedDataHandler);
             final var controller = new ConfigResourceController(resourceScheduler);
-            operator.registerController(controller);
+            operator.registerControllerForAllNamespaces(controller);
             Quarkus.waitForExit();
             return 0;
         }
