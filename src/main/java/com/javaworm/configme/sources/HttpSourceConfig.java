@@ -1,14 +1,13 @@
 package com.javaworm.configme.sources;
 
 import com.javaworm.configme.SourceConfig;
-import io.quarkus.runtime.annotations.RegisterForReflection;
 import java.util.Map;
 
 public class HttpSourceConfig implements SourceConfig {
-  private String url;
-  private double intervalSeconds = 60.0;
-  private String httpAuthenticationMethod;
-  private BearerAuthenticationConfig authenticationConfig;
+  private final String url;
+  private final double intervalSeconds;
+  private final String httpAuthenticationMethod;
+  private final BearerAuthenticationConfig authenticationConfig;
 
   public HttpSourceConfig(
       String url,
@@ -37,11 +36,11 @@ public class HttpSourceConfig implements SourceConfig {
     return authenticationConfig;
   }
 
-  public static HttpSourceConfig fromMap(Map map) {
+  public static HttpSourceConfig fromMap(Map<Object, Object> map) {
     return new HttpSourceConfig(
-        map.get("url").toString(), //validate it
-        Double.valueOf(map.get("intervalSeconds").toString()),
-        map.getOrDefault("authenticationMethod", "none").toString(), //validate is in list
+        map.get("url").toString(), // validate it
+        Double.parseDouble(map.getOrDefault("intervalSeconds", "60").toString()),
+        map.getOrDefault("authenticationMethod", "none").toString(), // validate is in list
         //        map.get("authenticationConfig")
         null);
   }
