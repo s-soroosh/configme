@@ -1,0 +1,15 @@
+apiVersion: configme.javaworm.com/v1
+kind: ConfigSource
+metadata:
+  name: simple-http-config
+spec:
+  sourceType: http
+  targetConfigMapName: http-config
+  sourceConfig:
+    url: https://jsonplaceholder.typicode.com/todos
+    intervalSeconds: 10
+    authenticationMethod: bearer
+    authenticationConfig:
+      tokenType: Bearer
+      secretName: test-credentials
+      tokenSecretKey: default-token-secret
