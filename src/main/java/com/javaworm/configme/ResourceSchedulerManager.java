@@ -1,6 +1,7 @@
 package com.javaworm.configme;
 
 import com.javaworm.configme.resources.ConfigSourceResource;
+import com.javaworm.configme.schedulers.HttpResourceScheduler;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import java.net.http.HttpClient;
 import java.util.Map;

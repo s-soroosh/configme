@@ -1,5 +1,9 @@
-package com.javaworm.configme;
+package com.javaworm.configme.schedulers;
 
+import com.javaworm.configme.ConfigSource;
+import com.javaworm.configme.FetchedDataHandler;
+import com.javaworm.configme.RequestContext;
+import com.javaworm.configme.ResourceScheduler;
 import com.javaworm.configme.resources.ConfigSourceResource;
 import com.javaworm.configme.sources.HttpSourceConfig;
 import java.io.IOException;
