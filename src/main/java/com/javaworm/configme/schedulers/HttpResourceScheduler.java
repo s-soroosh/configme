@@ -42,7 +42,7 @@ public class HttpResourceScheduler implements ResourceScheduler {
         new TimerTask() {
           @Override
           public void run() {
-            final var request = httpRequestFactory.create(configSource.getSourceConfig());
+            final var request = httpRequestFactory.create(configSource);
             log.debug("Fetching data from {}", request.uri());
             try {
               final HttpResponse<String> response;

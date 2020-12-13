@@ -23,7 +23,7 @@ public class ResourceSchedulerManager {
             new HttpResourceScheduler(
                 fetchedDataHandler,
                 HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build(),
-                new HttpRequestFactory()));
+                new HttpRequestFactory(k8sClient)));
   }
 
   public void schedule(RequestContext<ConfigSourceResource> context) {
