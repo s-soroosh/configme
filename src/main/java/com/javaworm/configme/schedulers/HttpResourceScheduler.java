@@ -7,9 +7,7 @@ import com.javaworm.configme.ResourceScheduler;
 import com.javaworm.configme.resources.ConfigSourceResource;
 import com.javaworm.configme.sources.HttpSourceConfig;
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Map;
 import java.util.Timer;
@@ -21,27 +19,31 @@ import org.slf4j.LoggerFactory;
 public class HttpResourceScheduler implements ResourceScheduler {
   private static final Logger log = LoggerFactory.getLogger(HttpResourceScheduler.class);
   private final HttpClient client;
+  private final HttpRequestFactory httpRequestFactory;
 
   private final FetchedDataHandler fetchedDataHandler;
   private final Timer timer = new Timer(HttpResourceScheduler.class.getName());
   private final Map<String, TimerTask> resourceTimers = new ConcurrentHashMap<>();
 
-  public HttpResourceScheduler(FetchedDataHandler fetchedDataHandler,HttpClient httpClient) {
+  public HttpResourceScheduler(
+      FetchedDataHandler fetchedDataHandler,
+      HttpClient httpClient,
+      HttpRequestFactory httpRequestFactory) {
     this.fetchedDataHandler = fetchedDataHandler;
-    this.client= httpClient;
+    this.client = httpClient;
+    this.httpRequestFactory = httpRequestFactory;
   }
 
   public void schedule(ConfigSource<HttpSourceConfig> configSource) {
     cancelCurrentTask(configSource);
-    final var url = configSource.getSourceConfig().getUrl();
     final var intervalSeconds = configSource.getSourceConfig().getIntervalSeconds();
     final var intervalMilliseconds = (int) (intervalSeconds * 1000.0);
     final TimerTask task =
         new TimerTask() {
           @Override
           public void run() {
-            log.debug("Fetching data from {}", url);
-            final var request = HttpRequest.newBuilder().uri(URI.create(url)).GET().build();
+            final var request = httpRequestFactory.create(configSource.getSourceConfig());
+            log.debug("Fetching data from {}", request.uri());
             try {
               final HttpResponse<String> response;
               response = client.send(request, HttpResponse.BodyHandlers.ofString());
@@ -49,7 +51,7 @@ public class HttpResourceScheduler implements ResourceScheduler {
                 configSource.getContext().emit("Error");
                 log.warn(
                     "Fetching data from url {} failed with status code {} and body {}",
-                    url,
+                    request.uri(),
                     response.statusCode(),
                     response.body());
                 return;
@@ -59,7 +61,7 @@ public class HttpResourceScheduler implements ResourceScheduler {
               fetchedDataHandler.handle(configSource, body);
             } catch (IOException | InterruptedException e) {
               configSource.getContext().emit("Error");
-              log.error("Error in fetching data from " + url, e);
+              log.error("Error in fetching data from " + request.uri(), e);
             }
           }
         };

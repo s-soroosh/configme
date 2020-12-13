@@ -1,6 +1,7 @@
 package com.javaworm.configme;
 
 import com.javaworm.configme.resources.ConfigSourceResource;
+import com.javaworm.configme.schedulers.HttpRequestFactory;
 import com.javaworm.configme.schedulers.HttpResourceScheduler;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import java.net.http.HttpClient;
@@ -21,7 +22,8 @@ public class ResourceSchedulerManager {
             "http",
             new HttpResourceScheduler(
                 fetchedDataHandler,
-                HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build()));
+                HttpClient.newBuilder().followRedirects(HttpClient.Redirect.NORMAL).build(),
+                new HttpRequestFactory()));
   }
 
   public void schedule(RequestContext<ConfigSourceResource> context) {
