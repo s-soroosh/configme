@@ -1,4 +1,4 @@
-package com.javaworm.configme.schedulers;
+package com.javaworm.configme.schedulers.http;
 
 import com.javaworm.configme.ConfigSource;
 import com.javaworm.configme.FetchedDataHandler;
