@@ -33,6 +33,8 @@ public class BearerRequestFilter {
                 configSource.getNamespace(),
                 httpSourceConfig.getAuthenticationConfig().getSecretName(),
                 httpSourceConfig.getAuthenticationConfig().getTokenSecretKey())));
+
+    return originalBuilder;
   }
 
   private String getSecret(String namespace, String secretName, String secretKeyName) {

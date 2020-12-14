@@ -19,8 +19,13 @@ public class HttpRequestFactory {
   public HttpRequest create(ConfigSource<HttpSourceConfig> configSource) {
     final var httpSourceConfig = configSource.getSourceConfig();
     final var url = httpSourceConfig.getUrl();
-    final var requestBuilder = HttpRequest.newBuilder().uri(URI.create(url)).GET();
-    if (httpSourceConfig.getHttpAuthenticationMethod().equals("bearer")) {}
+    var requestBuilder = HttpRequest.newBuilder().uri(URI.create(url)).GET();
+
+    final var requestFilter =
+        requestFilterMappings.get(httpSourceConfig.getHttpAuthenticationMethod());
+    if (requestFilter != null) {
+      requestFilter.filter(requestBuilder, configSource);
+    }
 
     return requestBuilder.build();
   }
