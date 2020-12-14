@@ -10,9 +10,10 @@ import java.util.Map;
 
 public class HttpRequestFactory {
 
-  private Map<String, BearerRequestFilter> requestFilterMappings = new HashMap<>();
+  private Map<String, AuthRequestFilter> requestFilterMappings = new HashMap<>();
 
   public HttpRequestFactory(KubernetesClient k8sClient) {
+    requestFilterMappings.put("none", new NoneRequestFilter());
     requestFilterMappings.put("bearer", new BearerRequestFilter(k8sClient));
   }
 

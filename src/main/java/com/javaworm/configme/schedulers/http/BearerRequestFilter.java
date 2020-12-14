@@ -11,7 +11,7 @@ import io.fabric8.kubernetes.client.dsl.Resource;
 import java.net.http.HttpRequest;
 import java.util.Base64;
 
-public class BearerRequestFilter {
+public class BearerRequestFilter implements AuthRequestFilter {
   private final KubernetesClient k8sClient;
   private MixedOperation<Secret, SecretList, DoneableSecret, Resource<Secret, DoneableSecret>>
       secretsAPI;
