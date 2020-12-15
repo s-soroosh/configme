@@ -53,8 +53,32 @@ The example above will call the url https://jsonplaceholder.typicode.com/todos e
 
 ### What if the endpoint is secured
 
-If you are interested to load the config from a secured endpoint... it is possible :tada: 
+If you are interested to load the config from a secured endpoint... it is possible :tada:.
 
+Configme currently supports bearer tokens loaded from a secret living in the same namespace as ConfgiSource itself is living.  
+If you are interested in any other authentication method, feel free to open an issue (you are very welcomed to contribute to the code as well!)
+
+The following example shows how to do setup bearer authentication method:
+
+```
+apiVersion: configme.javaworm.com/v1beta1
+kind: ConfigSource
+metadata:
+  name: bearer-http-configsource
+  namespace: test-configme
+spec:
+  sourceType: http
+  targetConfigMapName: bearer-http-config
+  sourceConfig:
+    url: https://jsonplaceholder.typicode.com/todos
+    intervalSeconds: 5
+    authenticationMethod: bearer
+    authenticationConfig:
+      tokenType: Bearer
+      secretName: source-credentials
+      tokenSecretKey: default-token-secret
+
+```
 
 
  
@@ -70,7 +94,7 @@ If you are interested to load the config from a secured endpoint... it is possib
   - [ ] basic
   - [ ] api-key
   - ...
+- [X] How to use document
 - [ ] Schema support for fetched configuration
-- [ ] How to use document
 
 
