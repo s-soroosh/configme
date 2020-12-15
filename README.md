@@ -17,6 +17,18 @@ Not to mention that while the external service is down your service can't scale 
 Well, this solution is already better than the previous one... 
 but really? you want to spend your resoures to implement a thing identical to what K8s already provides?
 
+## How to install the operator
+
+The simplest way to install the Configme on your K8s cluster is running the following command:
+
+**⚠ WARNING:** it will create a new namespace called *configme-operator* and deploy the operator in it. 
+If it is not desirable, consider to edit the file according to your requirements.
+```
+kubectl apply -f https://raw.githubusercontent.com/psycho-ir/configme/master/deployment/operator.yml 
+```
+
+
+  
  
 
 ## TODO
