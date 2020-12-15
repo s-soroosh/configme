@@ -1,4 +1,4 @@
-apiVersion: configme.javaworm.com/v1
+apiVersion: configme.javaworm.com/v1beta1
 kind: ConfigSource
 metadata:
   name: simple-http-config

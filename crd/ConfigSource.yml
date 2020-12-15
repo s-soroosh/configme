@@ -4,7 +4,7 @@ metadata:
   name: configsources.configme.javaworm.com
 spec:
   group: configme.javaworm.com
-  version: v1
+  version: v1beta1
   subresources:
     status: { }
   scope: Namespaced
