@@ -1,6 +1,7 @@
 ConfigME
 ========
-A Kubernetes operator to load configmap data from external services. 
+A Kubernetes operator to load the configmap data from external services.
+ 
 
 
 ## TODO
@@ -9,8 +10,8 @@ A Kubernetes operator to load configmap data from external services.
 - [X] Native image build
 - [x] Docker Image
 - [ ] Different Authentications methods
-  - [ ] none
-  - [ ] bearer
+  - [x] none
+  - [x] bearer
   - [ ] basic
   - [ ] api-key
   - ...
