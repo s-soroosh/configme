@@ -1,10 +1,10 @@
 apiVersion: configme.javaworm.com/v1beta1
 kind: ConfigSource
 metadata:
-  name: simple-http-config
+  name: simple-http-configsource
 spec:
   sourceType: http
-  targetConfigMapName: http-config
+  targetConfigMapName: todos-config
   sourceConfig: 
     url: https://jsonplaceholder.typicode.com/todos
     intervalSeconds: 10

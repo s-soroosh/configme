@@ -38,7 +38,7 @@ A ConfigSource defining a mapping from a http endpoint to a Configmap in your cl
 apiVersion: configme.javaworm.com/v1beta1
 kind: ConfigSource
 metadata:
-  name: simple-http-config
+  name: simple-http-configsource
   namespace: test-configme
 spec:
   sourceType: http
