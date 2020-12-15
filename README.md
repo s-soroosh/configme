@@ -48,7 +48,12 @@ spec:
     intervalSeconds: 10
 ```
 
-The example above will call the url https://jsonplaceholder.typicode.com/todos every 10 seconds and update the ConfigMap called `todos-config` in namespace `test-configme`. 
+The example above will call the url https://jsonplaceholder.typicode.com/todos every 10 seconds and update the ConfigMap called `todos-config` in namespace `test-configme`.
+
+
+### What if the endpoint is secured
+
+If you are interested to load the config from a secured endpoint... it is possible :tada: 
 
 
 
