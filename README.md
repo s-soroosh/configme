@@ -1,6 +1,6 @@
 ConfigME
 ========
-A Kubernetes operator to load the configmap data from external services.
+A Kubernetes operator to load the configmap data from different datasources.
 There are situations where services in a Kubernetes cluster may need data provided by different datasources 
 like HTTP-API, files in a GitServer or kafka topic to name a few.
 
