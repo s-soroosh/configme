@@ -14,44 +14,45 @@ import java.time.format.DateTimeFormatter;
 
 public class K8sEventEmitter {
 
-    private final MixedOperation<Event, EventList, DoneableEvent, Resource<Event, DoneableEvent>> events;
+  private final MixedOperation<Event, EventList, DoneableEvent, Resource<Event, DoneableEvent>>
+      events;
 
-    public K8sEventEmitter(KubernetesClient k8sClient) {
-        events = k8sClient.v1().events();
+  public K8sEventEmitter(KubernetesClient k8sClient) {
+    events = k8sClient.v1().events();
+  }
+
+  public Event emit(CustomResource resource, ConfigSourceEvent configSourceEvent) {
+    final var event = configSourceEvent.toK8sEvent();
+    final String eventTime =
+        LocalDateTime.now(ZoneId.of("UTC"))
+            .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"));
+    final var namespace = resource.getMetadata().getNamespace();
+    final var eventName = event.getMetadata().getName();
+    final var existingEvent = events.inNamespace(namespace).withName(eventName).get();
+
+    if (existingEvent != null) {
+      event.setFirstTimestamp(existingEvent.getFirstTimestamp());
+      event.setCount(existingEvent.getCount() == null ? 1 : existingEvent.getCount() + 1);
+    } else {
+      event.setFirstTimestamp(eventTime);
+      event.setCount(1);
     }
+    event.setLastTimestamp(eventTime);
+    this.setInvolvedObject(resource, event);
+    return events.inNamespace(namespace).createOrReplace(event);
+  }
 
-    public Event emit(CustomResource resource, Event event) {
-        final String eventTime = LocalDateTime.now(ZoneId.of("UTC")).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'"));
-        final var namespace = resource.getMetadata().getNamespace();
-        final var eventName = event.getMetadata().getName();
-        final var existingEvent = events.inNamespace(namespace).withName(eventName).get();
-
-        if (existingEvent != null) {
-            event.setFirstTimestamp(existingEvent.getFirstTimestamp());
-            event.setCount(existingEvent.getCount() == null ? 1 : existingEvent.getCount() + 1);
-        } else {
-            event.setFirstTimestamp(eventTime);
-            event.setCount(1);
-        }
-        event.setLastTimestamp(eventTime);
-        this.setInvolvedObject(resource, event);
-        return events.inNamespace(namespace).createOrReplace(event);
-    }
-
-    private Event setInvolvedObject(CustomResource resource, Event event) {
-        final var metadata = resource.getMetadata();
-        event.setInvolvedObject(
-                new ObjectReference(
-                        resource.getApiVersion(),
-                        null,
-                        resource.getKind(),
-                        metadata.getName(),
-                        metadata.getNamespace(),
-                        metadata.getResourceVersion(),
-                        metadata.getUid())
-        );
-        return event;
-
-    }
-
+  private Event setInvolvedObject(CustomResource resource, Event event) {
+    final var metadata = resource.getMetadata();
+    event.setInvolvedObject(
+        new ObjectReference(
+            resource.getApiVersion(),
+            null,
+            resource.getKind(),
+            metadata.getName(),
+            metadata.getNamespace(),
+            metadata.getResourceVersion(),
+            metadata.getUid()));
+    return event;
+  }
 }
