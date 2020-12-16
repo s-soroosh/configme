@@ -1,5 +1,6 @@
 package com.javaworm.configme;
 
+import com.javaworm.configme.events.K8sEventEmitter;
 import io.fabric8.kubernetes.api.model.ConfigMap;
 import io.fabric8.kubernetes.api.model.ConfigMapBuilder;
 import io.fabric8.kubernetes.api.model.DoneableConfigMap;

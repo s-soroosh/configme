@@ -1,4 +1,4 @@
-package com.javaworm.configme;
+package com.javaworm.configme.events;
 
 import io.fabric8.kubernetes.api.model.DoneableEvent;
 import io.fabric8.kubernetes.api.model.Event;

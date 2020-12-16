@@ -1,4 +1,4 @@
-package com.javaworm.configme;
+package com.javaworm.configme.events;
 
 import io.fabric8.kubernetes.client.CustomResource;
 import io.javaoperatorsdk.operator.processing.KubernetesResourceUtils;
@@ -6,7 +6,7 @@ import io.javaoperatorsdk.operator.processing.event.AbstractEventSource;
 import io.javaoperatorsdk.operator.processing.event.Event;
 import io.javaoperatorsdk.operator.processing.event.EventSource;
 
-public class AdhocEventSource extends AbstractEventSource {
+public class ConfigSourceEventSource extends AbstractEventSource {
     public void update(CustomResource resource, String msg) {
         System.out.println("event for resource " + resource.getMetadata().getUid());
         this.eventHandler.handleEvent(new AdhocEvent(resource, msg));
@@ -28,7 +28,7 @@ public class AdhocEventSource extends AbstractEventSource {
 
         @Override
         public EventSource getEventSource() {
-            return AdhocEventSource.this;
+            return ConfigSourceEventSource.this;
         }
 
         public String getMsg() {

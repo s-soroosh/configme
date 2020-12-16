@@ -1,6 +1,6 @@
 package com.javaworm.configme.controllers;
 
-import com.javaworm.configme.AdhocEventSource;
+import com.javaworm.configme.events.ConfigSourceEventSource;
 import com.javaworm.configme.RequestContext;
 import com.javaworm.configme.ResourceSchedulerManager;
 import com.javaworm.configme.resources.ConfigSourceResource;
@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 public class ConfigResourceController extends BaseResourceController<ConfigSourceResource> {
     private static final Logger LOG = LoggerFactory.getLogger(ConfigResourceController.class);
     private final ResourceSchedulerManager resourceSchedulerManager;
-    private AdhocEventSource eventSource = new AdhocEventSource();
+    private ConfigSourceEventSource eventSource = new ConfigSourceEventSource();
 
     public ConfigResourceController(ResourceSchedulerManager resourceSchedulerManager) {
         this.resourceSchedulerManager = resourceSchedulerManager;
@@ -48,7 +48,7 @@ public class ConfigResourceController extends BaseResourceController<ConfigSourc
 
     @Override
     public UpdateControl<ConfigSourceResource> onEvent(ConfigSourceResource resource, Context<ConfigSourceResource> context) {
-        context.getEvents().getLatestOfType(AdhocEventSource.AdhocEvent.class)
+        context.getEvents().getLatestOfType(ConfigSourceEventSource.AdhocEvent.class)
                 .ifPresent(e -> {
                             LOG.info("Updating the status of the resource, new resource: [{}]", e.getMsg());
                             resource.setStatus(new ConfigSourceResourceStatus(e.getMsg()));
