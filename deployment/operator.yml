@@ -28,7 +28,7 @@ spec:
       serviceAccountName: configme-operator
       containers:
         - name: operator
-          image: javawormops/configme:0.1
+          image: javawormops/configme:0.2
           imagePullPolicy: IfNotPresent
 
 ---
