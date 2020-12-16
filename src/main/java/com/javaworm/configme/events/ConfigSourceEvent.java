@@ -3,7 +3,7 @@ package com.javaworm.configme.events;
 import io.fabric8.kubernetes.api.model.Event;
 import io.fabric8.kubernetes.api.model.EventBuilder;
 
-public abstract class ConfigSourceEvent {
+public class ConfigSourceEvent {
   private final String eventType;
   private final String reason;
   private final String message;
