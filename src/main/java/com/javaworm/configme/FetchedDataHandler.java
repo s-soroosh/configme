@@ -85,7 +85,7 @@ public class FetchedDataHandler {
             new ConfigSourceEvent(
                 "UPDATE",
                 "dataLoaded",
-                String.format("Configmap %s has is up to date, left intact", configName));
+                String.format("Configmap %s is up to date, left intact", configName));
       }
     }
 
