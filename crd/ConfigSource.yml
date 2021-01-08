@@ -34,3 +34,9 @@ spec:
               format: decimal
             sourceConfig:
               type: object
+            provideAs:
+              type: string
+              enum:
+                - is
+                - gzip
+
