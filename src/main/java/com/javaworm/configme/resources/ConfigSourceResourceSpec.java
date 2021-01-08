@@ -5,19 +5,25 @@ import java.util.Map;
 
 @RegisterForReflection
 public class ConfigSourceResourceSpec {
-    private String sourceType;
-    private Map sourceConfig;
-    private String targetConfigMapName;
+  private String sourceType;
+  private Map sourceConfig;
+  private String targetConfigMapName;
 
-    public String getSourceType() {
-        return sourceType;
-    }
+  private String provideAs;
 
-    public Map getSourceConfig() {
-        return sourceConfig;
-    }
+  public String getSourceType() {
+    return sourceType;
+  }
 
-    public String getTargetConfigMapName() {
-        return targetConfigMapName;
-    }
+  public Map getSourceConfig() {
+    return sourceConfig;
+  }
+
+  public String getTargetConfigMapName() {
+    return targetConfigMapName;
+  }
+
+  public String getProvideAs() {
+    return provideAs;
+  }
 }
