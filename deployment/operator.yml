@@ -30,6 +30,49 @@ spec:
         - name: operator
           image: javawormops/configme:0.2
           imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              memory: 512m
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: configme-operator-role
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  - secrets
+  - events
+  verbs:
+  - get
+  - list
+  - create
+  - update
+- apiGroups:
+  - "apiextensions.k8s.io"
+  resources:
+  - customresourcedefinitions
+  resourceNames:
+  - configsources.configme.javaworm.com
+  verbs:
+  - get
+  - list 
+  - create 
+- apiGroups:
+  - "configme.javaworm.com"
+  resources:
+  - configsources
+  - configsources/status
+  verbs:
+  - get
+  - list
+  - create
+  - watch
+  - update
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -41,6 +84,6 @@ subjects:
     name: configme-operator
     namespace: configme-operator
 roleRef:
+  apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: cluster-admin
-  apiGroup: ""
+  name: configme-operator-role
