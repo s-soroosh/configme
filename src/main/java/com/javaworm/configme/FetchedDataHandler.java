@@ -17,7 +17,6 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
 import java.util.zip.GZIPOutputStream;
-import org.apache.commons.compress.compressors.gzip.GzipUtils;
 
 public class FetchedDataHandler {
   private final KubernetesClient k8sClient;

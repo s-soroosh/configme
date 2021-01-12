@@ -1,8 +1,8 @@
 package com.javaworm.configme.controllers;
 
-import com.javaworm.configme.events.ConfigSourceEventSource;
 import com.javaworm.configme.RequestContext;
 import com.javaworm.configme.ResourceSchedulerManager;
+import com.javaworm.configme.events.ConfigSourceEventSource;
 import com.javaworm.configme.resources.ConfigSourceResource;
 import com.javaworm.configme.resources.ConfigSourceResourceStatus;
 import io.javaoperatorsdk.operator.api.Context;
