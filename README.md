@@ -128,6 +128,7 @@ spec:
   - [ ] api-key
   - ...
 - [X] How to use document
+- [X] Provide configs as **is** and **Gzip**
 - [ ] Schema support for fetched configuration
 
 
