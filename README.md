@@ -53,7 +53,7 @@ The example above will call the url https://jsonplaceholder.typicode.com/todos e
 
 ### What if the endpoint is secured
 
-If you are interested to load the config from a secured endpoint... it is possible :tada:.
+It is quite simple to load the configuration from a secured http endpoint.
 
 Configme currently supports bearer tokens loaded from a secret living in the same namespace as ConfgiSource itself is living.  
 If you are interested in any other authentication method, feel free to open an issue (you are very welcomed to contribute to the code as well!)
@@ -80,7 +80,40 @@ spec:
 
 ```
 
+### Load config files from Github repositories
 
+Given that Github has the possibility to provide the files in raw format, it's quite easy to fetch the load configs from Github through `sourceType: http`. 
+
+The example below shows how to load the configuration from master branch of a private repository: 
+
+```yaml
+apiVersion: v1
+data:
+  token: base64(GITHIB_TOKEN)
+kind: Secret
+metadata:
+  name: github-credentials
+type: Opaque
+
+---
+
+apiVersion: configme.javaworm.com/v1beta1
+kind: ConfigSource
+metadata:
+  name: bearer-http-configsource
+spec:
+  sourceType: http
+  targetConfigMapName: readme-config
+  sourceConfig:
+    url: https://raw.githubusercontent.com/psycho-ir/private-repository/master/config.json
+    intervalSeconds: 5
+    authenticationMethod: bearer
+    authenticationConfig:
+      tokenType: Bearer
+      secretName: github-credentials
+      tokenSecretKey: token
+
+``` 
  
 
 ## TODO
