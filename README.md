@@ -23,7 +23,7 @@ The simplest way to install the Configme on your K8s cluster is running the foll
 
 **⚠ WARNING:** it will create a new namespace called **configme-operator** and deploy the operator in it. 
 If it is not desirable, consider to edit the file according to your requirements.
-```
+```bash
 kubectl apply -f https://raw.githubusercontent.com/psycho-ir/configme/master/crd/ConfigSource.yml
 kubectl apply -f https://raw.githubusercontent.com/psycho-ir/configme/master/deployment/operator.yml 
 ```
@@ -34,7 +34,7 @@ Configme introduces a new Custom Resource Definition in your cluster called **Co
 
 A ConfigSource defining a mapping from a http endpoint to a Configmap in your cluster will look like this: 
 
-```
+```yaml
 apiVersion: configme.javaworm.com/v1beta1
 kind: ConfigSource
 metadata:
@@ -60,7 +60,7 @@ If you are interested in any other authentication method, feel free to open an i
 
 The following example shows how to do setup bearer authentication method:
 
-```
+```yaml
 apiVersion: configme.javaworm.com/v1beta1
 kind: ConfigSource
 metadata:
@@ -112,7 +112,6 @@ spec:
       tokenType: Bearer
       secretName: github-credentials
       tokenSecretKey: token
-
 ``` 
  
 
