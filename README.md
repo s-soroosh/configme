@@ -89,7 +89,7 @@ The example below shows how to load the configuration from master branch of a pr
 ```yaml
 apiVersion: v1
 data:
-  token: base64(GITHIB_TOKEN)
+  token: base64(GITHUB_TOKEN)
 kind: Secret
 metadata:
   name: github-credentials
