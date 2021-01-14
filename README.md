@@ -94,7 +94,6 @@ kind: Secret
 metadata:
   name: github-credentials
 type: Opaque
-
 ---
 
 apiVersion: configme.javaworm.com/v1beta1
