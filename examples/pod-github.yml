@@ -16,7 +16,7 @@ spec:
   sourceType: http
   targetConfigMapName: readme-config
   sourceConfig:
-    url: https://raw.githubusercontent.com/psycho-ir/configme/master/README.md
+    url: https://raw.githubusercontent.com/s-soroosh/configme/master/README.md
     intervalSeconds: 5
     authenticationMethod: bearer
     authenticationConfig:
