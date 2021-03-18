@@ -8,6 +8,8 @@ import io.fabric8.kubernetes.api.model.DoneableConfigMap;
 import io.fabric8.kubernetes.api.model.OwnerReference;
 import io.fabric8.kubernetes.client.KubernetesClient;
 import io.fabric8.kubernetes.client.dsl.Resource;
+import io.micrometer.core.instrument.MeterRegistry;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -15,16 +17,29 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.zip.GZIPOutputStream;
 
 public class FetchedDataHandler {
   private final KubernetesClient k8sClient;
   private final K8sEventEmitter k8sEventEmitter;
+  private final MeterRegistry registry;
+  private final Map<String, Long> lastUpdateMap = new HashMap<>();
 
-  public FetchedDataHandler(KubernetesClient k8sClient) {
+  public FetchedDataHandler(KubernetesClient k8sClient, MeterRegistry registry) {
     this.k8sClient = k8sClient;
     this.k8sEventEmitter = new K8sEventEmitter(k8sClient);
+    this.registry = registry;
+  }
+
+  private void onLastUpdateChange(String configName, Long lastUpdateValue) {
+    var metricName = "something." + configName;
+    if (!lastUpdateMap.containsKey(metricName)) {
+      registry.gauge(metricName, FetchedDataHandler.this, value -> lastUpdateMap.get(metricName));
+    }
+    lastUpdateMap.put(metricName, lastUpdateValue);
   }
 
   public void handle(ConfigSource<? extends SourceConfig> configSource, String data)
@@ -44,6 +59,7 @@ public class FetchedDataHandler {
     System.out.println("provide as " + provideAs);
     if (provideAs.equals("is")) {
       if (existingConfigmap == null) {
+        var lastUpdateDate = new Date();
         ConfigMap configMap =
             configMapResource.createOrReplace(
                 new ConfigMapBuilder()
@@ -59,9 +75,10 @@ public class FetchedDataHandler {
                             configSource.getUid()))
                     .endMetadata()
                     .addToData("config", data)
-                    .addToData("lastUpdate", new Date().toString())
+                    .addToData("lastUpdate", lastUpdateDate.toString())
                     .addToData("hash", String.valueOf(data.hashCode()))
                     .build());
+        onLastUpdateChange(configName, lastUpdateDate.getTime());
         event =
             new ConfigSourceEvent(
                 "UPDATE", "dataLoaded", String.format("Configmap %s has been created", configName));
@@ -69,6 +86,7 @@ public class FetchedDataHandler {
         final String existingHash = existingConfigmap.getData().get("hash");
         final String newHash = String.valueOf(data.hashCode());
         if (!newHash.equals(existingHash)) {
+          var lastUpdateDate = new Date();
           configMapResource.replace(
               new ConfigMapBuilder()
                   .withNewMetadata()
@@ -83,9 +101,10 @@ public class FetchedDataHandler {
                           configSource.getUid()))
                   .endMetadata()
                   .addToData("config", data)
-                  .addToData("lastUpdate", new Date().toString())
+                  .addToData("lastUpdate", lastUpdateDate.toString())
                   .addToData("hash", String.valueOf(data.hashCode()))
                   .build());
+          onLastUpdateChange(configName, lastUpdateDate.getTime());
           event =
               new ConfigSourceEvent(
                   "UPDATE",
@@ -105,6 +124,7 @@ public class FetchedDataHandler {
       if (existingConfigmap == null) {
         byte[] compressedData = compress(data);
         final var encodedCompressedData = Base64.getEncoder().encodeToString(compressedData);
+        var lastUpdateDate = new Date();
         ConfigMap configMap =
             configMapResource.createOrReplace(
                 new ConfigMapBuilder()
@@ -120,9 +140,10 @@ public class FetchedDataHandler {
                             configSource.getUid()))
                     .endMetadata()
                     .addToBinaryData("config", encodedCompressedData)
-                    .addToData("lastUpdate", new Date().toString())
+                    .addToData("lastUpdate", lastUpdateDate.toString())
                     .addToData("hash", String.valueOf(data.hashCode()))
                     .build());
+        onLastUpdateChange(configName, lastUpdateDate.getTime());
         event =
             new ConfigSourceEvent(
                 "UPDATE", "dataLoaded", String.format("Configmap %s has been created", configName));
@@ -135,6 +156,7 @@ public class FetchedDataHandler {
           byte[] compressedData = compress(data);
           final var encodedCompressedData = Base64.getEncoder().encodeToString(compressedData);
           if (!newHash.equals(existingHash)) {
+            var lastUpdateDate = new Date();
             configMapResource.replace(
                 new ConfigMapBuilder()
                     .withNewMetadata()
@@ -149,9 +171,10 @@ public class FetchedDataHandler {
                             configSource.getUid()))
                     .endMetadata()
                     .addToBinaryData("config", encodedCompressedData)
-                    .addToData("lastUpdate", new Date().toString())
+                    .addToData("lastUpdate", lastUpdateDate.toString())
                     .addToData("hash", String.valueOf(data.hashCode()))
                     .build());
+            onLastUpdateChange(configName, lastUpdateDate.getTime());
             event =
                 new ConfigSourceEvent(
                     "UPDATE",
