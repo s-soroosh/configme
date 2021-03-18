@@ -34,7 +34,7 @@
             -H:ReflectionConfigurationFiles=reflection-config.json , -H:ResourceConfigurationFiles=resources-config.json
         </quarkus.native.additional-build-args>
         <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
-        <javaoperatorsdk.version>1.8.0</javaoperatorsdk.version>
+        <javaoperatorsdk.version>1.4.0</javaoperatorsdk.version>
         <javassist.version>3.27.0-GA</javassist.version>
     </properties>
     <dependencyManagement>

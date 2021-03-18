@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.javaworm.configme.controllers.ConfigResourceController;
 import io.fabric8.kubernetes.client.DefaultKubernetesClient;
 import io.javaoperatorsdk.operator.Operator;
+import io.micrometer.prometheus.PrometheusConfig;
+import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.quarkus.runtime.Quarkus;
 import io.quarkus.runtime.QuarkusApplication;
 import io.quarkus.runtime.annotations.QuarkusMain;
@@ -23,7 +25,8 @@ public class OperatorRunner {
       final var objectMapper =
           new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-      final var fetchedDataHandler = new FetchedDataHandler(k8sClient);
+      final var meterRegistry = new PrometheusMeterRegistry(PrometheusConfig.DEFAULT);
+      final var fetchedDataHandler = new FetchedDataHandler(k8sClient, meterRegistry);
       final var configSourceFactory = new ConfigSourceFactory();
       final var resourceScheduler =
           new ResourceSchedulerManager(configSourceFactory, k8sClient, fetchedDataHandler);
