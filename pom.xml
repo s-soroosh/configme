@@ -34,7 +34,7 @@
             -H:ReflectionConfigurationFiles=reflection-config.json , -H:ResourceConfigurationFiles=resources-config.json
         </quarkus.native.additional-build-args>
         <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
-        <javaoperatorsdk.version>1.4.1-SNAPSHOT</javaoperatorsdk.version>
+        <javaoperatorsdk.version>1.4.0</javaoperatorsdk.version>
         <javassist.version>3.27.0-GA</javassist.version>
     </properties>
     <dependencyManagement>
@@ -69,7 +69,11 @@
             <artifactId>jackson-core</artifactId>
             <version>2.10.1</version>
         </dependency>
-
+        <dependency>
+            <groupId>io.quarkus</groupId>
+            <artifactId>quarkus-micrometer-registry-prometheus</artifactId>
+            <version>1.12.2.Final</version>
+        </dependency>
         <dependency>
             <groupId>io.javaoperatorsdk</groupId>
             <artifactId>operator-framework</artifactId>
